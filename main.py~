@@ -1,0 +1,22 @@
+from fastapi import FastAPI
+from contextlib import asynccontextmanager
+from database import delete_tables, create_tables
+from router import router as tasks_router
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await delete_tables()
+    print("Database deleted")
+    await create_tables()
+    print("Database created")
+    yield
+    print("Connection closed")
+
+
+
+
+app = FastAPI(lifespan=lifespan)
+
+
+
+
