@@ -1,6 +1,5 @@
 from fastapi import FastAPI
-from sqlalchemy.testing.suite.test_reflection import users
-
+from app.routers import permission
 from app.routers import category, products,auth
 
 app = FastAPI()
@@ -14,3 +13,4 @@ async def welcome() -> dict:
 app.include_router(category.router)
 app.include_router(products.router)
 app.include_router(auth.router)
+app.include_router(permission.router)
