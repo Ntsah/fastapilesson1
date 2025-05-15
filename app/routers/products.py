@@ -4,7 +4,6 @@ from slugify import slugify
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.backend.db_depends import get_db
 from sqlalchemy import select, insert
-
 from app.routers.auth import get_current_user
 from app.schemas import CreateProduct
 from app.models import *
@@ -176,9 +175,9 @@ async def delete_product(
     product_delete = await db.scalar(select(Product).where(Product.slug == product_slug))
     if product_delete is None:
         raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail='There is no product found'
-             )
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='There is no product found'
+        )
     if get_user.get('is_supplier') or get_user.get('is_admin'):
         if get_user.get('id') == product_delete.supplier_id or get_user.get('is_admin'):
             product_delete.is_active = False

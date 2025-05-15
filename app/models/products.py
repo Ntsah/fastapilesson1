@@ -1,5 +1,5 @@
 from sqlalchemy import Column, ForeignKey, Integer, String, Boolean, Float  # New
-from sqlalchemy.orm import relationship # New
+from sqlalchemy.orm import relationship  # New
 from app.backend.db import Base
 
 
@@ -19,3 +19,4 @@ class Product(Base):
     is_active = Column(Boolean, default=True)
 
     category = relationship('Category', back_populates='products')
+    reviews = relationship("Review", back_populates="products")
