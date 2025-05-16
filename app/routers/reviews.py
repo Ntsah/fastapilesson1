@@ -110,3 +110,18 @@ async def add_review(
         await db.commit()
 
         return {'message': 'Review added successfully'}
+
+
+@router.delete('/{review_id}')
+async def delete_review(db: Annotated[AsyncSession, Depends(get_db)], review_id: int,
+                        get_user: Annotated[dict, Depends(get_current_user)]):
+    review = await db.scalar(select(Review).where(Review.id == review_id))
+    if review.user_id != get_user['id'] and not get_user['is_admin']:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='You are not allowed to delete this review')
+
+    if not review:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Review not found')
+
+    await db.execute(update(Review).where(Review.id == review_id).values(is_active=False))
+    await db.commit()
+    return {'message': 'Review deleted successfully'}
