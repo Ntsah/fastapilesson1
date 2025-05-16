@@ -10,6 +10,9 @@ class Category(Base):
     name = Column(String)
     slug = Column(String, unique=True, index=True)
     is_active = Column(Boolean, default=True)
-    parent_id = Column(Integer, ForeignKey('categories.id'), nullable=True)  # New
+    parent_id = Column(
+        Integer,
+        ForeignKey('categories.id'),
+        nullable=True)  # New
 
     products = relationship("Product", back_populates="category", uselist=True)

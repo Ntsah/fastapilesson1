@@ -18,7 +18,7 @@ async def all_reviews(
     reviews = await db.scalars(
         select(Review)
         .where(
-            Review.is_active == True,
+            Review.is_active,
         )
     )
     all_reviews = reviews.all()
@@ -39,7 +39,7 @@ async def products_reviews(
         select(Product)
         .where(
             Product.id == product_id,
-            Product.is_active == True,
+            Product.is_active,
         )
     )
     if not product:
@@ -51,7 +51,7 @@ async def products_reviews(
         select(Review)
         .where(
             Review.product_id == product_id,
-            Review.is_active == True,
+            Review.is_active,
         )
     )
     all_reviews = reviews.all()
@@ -78,7 +78,7 @@ async def add_review(
             select(Product)
             .where(
                 Product.id == product_id,
-                Product.is_active == True,
+                Product.is_active,
             )
         )
         if not product:
@@ -110,4 +110,3 @@ async def add_review(
         await db.commit()
 
         return {'message': 'Review added successfully'}
-

@@ -10,8 +10,6 @@ from app.backend.db_depends import get_db
 from datetime import datetime, timedelta, timezone
 import jwt
 
-
-
 SECRET_KEY = 'a21679097c1ba42e9bd06eea239cdc5bf19b249e87698625cba5e3572f005544'
 ALGORITHM = 'HS256'
 
@@ -24,7 +22,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 async def create_user(
         db: Annotated[AsyncSession, Depends(get_db)],
         create_user: CreateUser
-)-> dict:
+) -> dict:
     await db.execute(
         insert(User)
         .values(
@@ -41,8 +39,9 @@ async def create_user(
         'transaction': 'Successful'
     }
 
+
 async def authenticate_user(
-        db: Annotated[AsyncSession,Depends(get_db)],
+        db: Annotated[AsyncSession, Depends(get_db)],
         username: str,
         password: str
 ):
@@ -51,7 +50,8 @@ async def authenticate_user(
         .where(
             User.username == username)
     )
-    if not user or not bcrypt_context.verify(password, user.hashed_password) or user.is_active == False:
+    if not user or not bcrypt_context.verify(
+            password, user.hashed_password) or user.is_active == False:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid authentication credentials",
@@ -68,15 +68,16 @@ async def login(
     user = await authenticate_user(db, form_data.username, form_data.password)
 
     token = await create_access_token(user.username, user.id, user.is_admin, user.is_supplier, user.is_customer,
-                                expires_delta=timedelta(minutes=20))
+                                      expires_delta=timedelta(minutes=20))
     return {
         'access_token': token,
         'token_type': 'bearer'
     }
 
+
 async def get_current_user(
         token: Annotated[str, Depends(oauth2_scheme)]
-)-> dict:
+) -> dict:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str | None = payload.get('sub')
@@ -129,12 +130,13 @@ async def get_current_user(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail='Could not validate user'
         )
+
+
 @router.get('/read_current_user')
 async def read_current_user(
         user: dict = Depends(get_current_user)
-)-> dict:
+) -> dict:
     return {'User': user}
-
 
 
 async def create_access_token(
@@ -144,7 +146,7 @@ async def create_access_token(
         is_supplier: bool,
         is_customer: bool,
         expires_delta: timedelta
-)-> str:
+) -> str:
     payload = {
         'sub': username,
         'id': user_id,

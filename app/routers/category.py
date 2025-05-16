@@ -19,7 +19,7 @@ async def get_all_categories(
     categories = await db.scalars(
         select(Category)
         .where(
-            Category.is_active == True)
+            Category.is_active)
     )
     return categories.all()
 

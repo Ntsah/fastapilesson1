@@ -18,7 +18,7 @@ async def all_products(
     products = await db.scalars(
         select(Product)
         .where(
-            Product.is_active == True,
+            Product.is_active,
             Product.stock > 0
         )
     )
@@ -88,12 +88,13 @@ async def product_by_category(
         .where(
             Category.parent_id == category.id)
     )
-    categories_and_subcategories = [category.id] + [i.id for i in subcategories.all()]
+    categories_and_subcategories = [
+        category.id] + [i.id for i in subcategories.all()]
     products_category = await db.scalars(
         select(Product)
         .where(
             Product.category_id.in_(categories_and_subcategories),
-            Product.is_active == True,
+            Product.is_active,
             Product.stock > 0)
     )
     return products_category.all()
@@ -108,7 +109,7 @@ async def product_detail(
         select(Product)
         .where(
             Product.slug == product_slug,
-            Product.is_active == True,
+            Product.is_active,
             Product.stock > 0)
     )
     if product is None:
@@ -133,7 +134,8 @@ async def update_product(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail='There is no product found'
             )
-        if get_user.get('id') == product_update.supplier_id or get_user.get('is_admin'):
+        if get_user.get(
+                'id') == product_update.supplier_id or get_user.get('is_admin'):
             category = await db.scalar(select(Category).where(Category.id == update_product_model.category))
             if category is None:
                 raise HTTPException(
@@ -179,7 +181,8 @@ async def delete_product(
             detail='There is no product found'
         )
     if get_user.get('is_supplier') or get_user.get('is_admin'):
-        if get_user.get('id') == product_delete.supplier_id or get_user.get('is_admin'):
+        if get_user.get(
+                'id') == product_delete.supplier_id or get_user.get('is_admin'):
             product_delete.is_active = False
             await db.commit()
             return {

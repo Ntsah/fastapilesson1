@@ -11,7 +11,8 @@ POSTGRES_DB_NAME = 'ecommerce'
 engine = create_async_engine(
     f'postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB_NAME}',
     echo=True)
-async_session_maker = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+async_session_maker = async_sessionmaker(
+    engine, expire_on_commit=False, class_=AsyncSession)
 
 
 class Base(DeclarativeBase):
